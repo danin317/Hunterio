@@ -3,6 +3,7 @@ const context = canvas.getContext("2d")
 
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
+canvas.style.backgroundColor = "#7fc457ff"
 
 const arrowKeys = {
 	ArrowUp: false,
@@ -37,7 +38,7 @@ function Player(x, y, radius, text) {
 		context.fillStyle = "black"
 		context.textAlign = "center"
 		context.textBaseline = "middle"
-		context.font = "10px Arial"
+		context.font = "15px Arial"
 		context.fillText(this.text, this.x, this.y)
 	}
 
@@ -80,21 +81,35 @@ function spawnFood(amount) {
 	for(let i = 0; i < amount; i++) {
 		let x = Math.random() * canvas.width
 		let y = Math.random() * canvas.height
-		let radius = Math.random() * 10
+		let radius = Math.random() * 5 + 5
 		arrayFood.push(new Food(x, y, radius))
 	}
 }
 
-let player = new Player(canvas.width / 2, canvas.height / 2, 20, "Example")
+let player = new Player(canvas.width / 2, canvas.height / 2, 20, "1")
 
 spawnFood(foodAmount)
 
+playerSize = 1
 function animate() {
 	requestAnimationFrame(animate)
 	context.clearRect(0, 0, canvas.width, canvas.height)
 	for (let i = 0; i < arrayFood.length; i++) {
 		let food = arrayFood[i]
 		food.draw()
+
+		let dx = player.x - food.x
+		let dy = player.y - food.y
+
+		let distance = Math.sqrt(dx * dx + dy * dy)
+
+		if (player.radius + food.radius > distance) {	
+			arrayFood.splice(i, 1)
+			player.radius += 0.2
+			playerSize += 1
+			player.text = playerSize.toString()
+			i--
+		}
 	}
 	player.update()
 }
