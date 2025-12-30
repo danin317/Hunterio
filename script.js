@@ -112,6 +112,71 @@ function BasicEnemy(x, y, dx, dy, radius, movement) {
 	}
 } 
 
+function CircularEnemy(x, y, radius, orbitRadius, speed) {
+	this.currentX = x
+	this.currentY = y
+	this.radius = radius
+	this.angle = 0
+	this.orbitRadius = orbitRadius
+	this.speed = speed
+
+	this.draw = function(px, py) {
+		context.beginPath()
+		context.arc(px, py, this.radius, 0, Math.PI * 2, false)
+		context.fillStyle = "purple"
+		context.fill()
+		context.lineWidth = 2
+		context.strokeStyle = "black"
+		context.stroke()
+	}
+
+	this.move = function() {
+		let x = this.currentX + Math.cos(this.angle) * this.orbitRadius
+		let y = this.currentY + Math.sin(this.angle) * this.orbitRadius
+		this.angle += this.speed
+		this.draw(x, y)
+	}
+
+}
+
+function RectangularEnemy(x, y, dx, dy, radius, state) {
+	this.startX = x
+	this.startY = y
+	this.x = x
+	this.y = y
+	this.dx = dx
+	this.dy = dy
+	this.radius = radius
+	this.state = state
+
+	this.draw = function() {
+		context.beginPath()
+		context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+		context.fillStyle = "pink"
+		context.fill()
+		context.lineWidth = 2
+		context.strokeStyle = "black"
+		context.stroke()
+	}
+	this.move = function() {
+		let length = 200
+		if (this.state == "right") {
+			this.x += this.dx
+			if (this.x >= this.startX + length) this.state = "down"
+		} else if (this.state == "down") {
+			this.y += this.dy
+			if (this.y >= this.startY + length) this.state = "left"
+		} else if (this.state == "left") {
+			this.x -= this.dx
+			if (this.x <= this.startX) this.state = "up"
+		} else if (this.state == "up") { 
+			this.y -= this.dy
+			if (this.y <= this.startY) this.state = "right"
+		}
+		this.draw()
+	}
+}
+
 let arrayFood = []
 let foodAmount = 100
 function spawnFood(amount) {
@@ -125,7 +190,8 @@ function spawnFood(amount) {
 
 let player = new Player(canvas.width / 2, canvas.height / 2, 20, "1")
 let basicEnemy = new BasicEnemy(100, 100, 10, 10, 20, "dvd")
-
+let circularEnemy = new CircularEnemy(canvas.width / 2, canvas.height / 2, 20, 200, 0.05)
+let rectEnemy = new RectangularEnemy(canvas.width / 2, canvas.height / 2, 5, 5, 20, "right")
 spawnFood(foodAmount)
 
 playerSize = 1
@@ -149,7 +215,7 @@ function animate() {
 			i--
 		}
 	}
-	basicEnemy.move()
+	rectEnemy.move()
 	player.update()
 }
 animate()
