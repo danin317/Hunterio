@@ -75,6 +75,43 @@ function Food(x, y, radius) {
 	}
 } 
 
+function BasicEnemy(x, y, dx, dy, radius, movement) {
+	this.x = x
+	this.y = y
+	this.dx = dx
+	this.dy = dy
+	this.radius = radius
+	this.movement = movement
+
+	this.draw = function() {
+		context.beginPath()
+		context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+		context.fillStyle = "blue"
+		context.fill()
+		context.lineWidth = 2
+		context.strokeStyle = "black"
+		context.stroke()
+	}
+
+	this.move = function() {
+		if (this.movement == "horizontal") {
+			if (this.x + this.radius > canvas.width || this.x - this.radius < 0) this.dx = -this.dx
+			this.x += this.dx
+		}
+		if (this.movement == "vertical") {
+			if (this.y + this.radius > canvas.height || this.y - this.radius < 0) this.dy = -this.dy
+			this.y += this.dy
+		}
+		if (this.movement == "dvd") {
+			if (this.x + this.radius > canvas.width || this.x - this.radius < 0) this.dx = -this.dx
+			if (this.y + this.radius > canvas.height || this.y - this.radius < 0) this.dy = -this.dy
+			this.x += this.dx
+			this.y += this.dy
+		}
+		this.draw()
+	}
+} 
+
 let arrayFood = []
 let foodAmount = 100
 function spawnFood(amount) {
@@ -87,6 +124,7 @@ function spawnFood(amount) {
 }
 
 let player = new Player(canvas.width / 2, canvas.height / 2, 20, "1")
+let basicEnemy = new BasicEnemy(100, 100, 10, 10, 20, "dvd")
 
 spawnFood(foodAmount)
 
@@ -111,6 +149,7 @@ function animate() {
 			i--
 		}
 	}
+	basicEnemy.move()
 	player.update()
 }
 animate()
