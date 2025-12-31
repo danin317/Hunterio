@@ -177,6 +177,33 @@ function RectangularEnemy(x, y, dx, dy, radius, state) {
 	}
 }
 
+function FollowCircle(x, y, radius) {
+	this.x = x
+	this.y = y
+	this.radius = radius 
+
+	this.draw = function() {
+		context.beginPath()
+		context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+		context.fillStyle = "white"
+		context.fill()
+		context.lineWidth = 2
+		context.strokeStyle = "black"
+		context.stroke()
+	}
+}
+
+function followPlayer(playerObject, followCircleObject) {
+	let diffX = playerObject.x - followCircleObject.x
+	let diffY = playerObject.y - followCircleObject.y
+
+	let angle = Math.atan2(diffY, diffX)
+
+	let speed = 2
+	followCircleObject.x += Math.cos(angle) * speed
+	followCircleObject.y += Math.sin(angle) * speed
+}
+
 let arrayFood = []
 let foodAmount = 100
 function spawnFood(amount) {
@@ -192,6 +219,7 @@ let player = new Player(canvas.width / 2, canvas.height / 2, 20, "1")
 let basicEnemy = new BasicEnemy(100, 100, 10, 10, 20, "dvd")
 let circularEnemy = new CircularEnemy(canvas.width / 2, canvas.height / 2, 20, 200, 0.05)
 let rectEnemy = new RectangularEnemy(canvas.width / 2, canvas.height / 2, 5, 5, 20, "right")
+let followEnemy = new FollowCircle(200, 200, 20)
 spawnFood(foodAmount)
 
 playerSize = 1
@@ -215,7 +243,8 @@ function animate() {
 			i--
 		}
 	}
-	rectEnemy.move()
+	followEnemy.draw()
 	player.update()
+	followPlayer(player, followEnemy)
 }
 animate()
